@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>消防演练动作分析监控系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1a73e8, #0d47a1);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            background-color: white;
+            color: #1a73e8;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .date-info {
+            font-size: 16px;
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 1100px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .monitor-section, .analysis-section {
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .section-title i {
+            color: #1a73e8;
+            font-size: 24px;
+            margin-right: 12px;
+        }
+
+        h2 {
+            font-size: 22px;
+            color: #1a73e8;
+        }
+
+        .monitor-container {
+            position: relative;
+            background-color: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 400px;
+            margin-bottom: 20px;
+        }
+
+        .monitor-screen {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .monitor-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+        }
+
+        .monitor-status {
+            color: white;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #4caf50;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .monitor-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .control-btn {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+
+        .control-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .analysis-result {
+            margin-top: 20px;
+        }
+
+        .person-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #1a73e8;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .person-details h3 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .analysis-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .analysis-table th, .analysis-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .analysis-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #1a73e8;
+        }
+
+        .action-correct {
+            color: #4caf50;
+            font-weight: 600;
+        }
+
+        .action-incorrect {
+            color: #f44336;
+            font-weight: 600;
+        }
+
+        .action-improvement {
+            color: #ff9800;
+            font-weight: 600;
+        }
+
+        .overall-score {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a73e8, #0d47a1);
+            color: white;
+            border-radius: 10px;
+        }
+
+        .score-value {
+            font-size: 48px;
+            font-weight: bold;
+        }
+
+        .score-label {
+            font-size: 18px;
+        }
+
+        .report-section {
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+            margin-top: 20px;
+        }
+
+        .report-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #1a73e8;
+            outline: none;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background-color: #1a73e8;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0d62d9;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #f8f9fa;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e9ecef;
+        }
+
+        .report-preview {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            display: none;
+        }
+
+        .report-preview.active {
+            display: block;
+        }
+
+        .report-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .report-content {
+            padding: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
+            border-top: 1px solid #eee;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border-left: 4px solid #4caf50;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <div class="logo">F</div>
+                <div>
+                    <h1>消防演练动作分析监控系统</h1>
+                    <p>实时动作识别与训练报告生成</p>
+                </div>
+            </div>
+            <div class="date-info">
+                <i class="far fa-calendar-alt"></i> 2026年3月9日 星期一
+            </div>
+        </header>
+
+        <div class="main-content">
+            <section class="monitor-section">
+                <div class="section-title">
+                    <i class="fas fa-video"></i>
+                    <h2>实时监控画面</h2>
+                </div>
+
+                <div class="monitor-container">
+                    <div class="monitor-overlay">
+                        <div class="monitor-status">
+                            <div class="status-indicator"></div>
+                            <span>监控信号正常 - 消防演练区域A</span>
+                        </div>
+                        <div class="monitor-controls">
+                            <button class="control-btn" id="recordBtn">
+                                <i class="fas fa-circle"></i>
+                            </button>
+                            <button class="control-btn" id="snapshotBtn">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                            <button class="control-btn" id="fullscreenBtn">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1615870216519-2f9fa575fa5c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="消防演练监控画面" class="monitor-screen">
+                </div>
+
+                <div class="person-info">
+                    <div class="avatar">王</div>
+                    <div class="person-details">
+                        <h3>王明 (工号: FD-2026-015)</h3>
+                        <p>部门: 生产一部 | 职位: 安全员 | 演练时间: 2026-03-09 10:30 AM</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="analysis-section">
+                <div class="section-title">
+                    <i class="fas fa-chart-bar"></i>
+                    <h2>动作分析结果</h2>
+                </div>
+
+                <table class="analysis-table">
+                    <thead>
+                        <tr>
+                            <th>动作名称</th>
+                            <th>标准度</th>
+                            <th>完成状态</th>
+                            <th>分析结果</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>火灾报警器操作</td>
+                            <td>95%</td>
+                            <td class="action-correct">正确</td>
+                            <td>动作迅速准确，符合标准流程</td>
+                        </tr>
+                        <tr>
+                            <td>灭火器使用姿势</td>
+                            <td>88%</td>
+                            <td class="action-correct">正确</td>
+                            <td>站位合理，灭火器握持正确</td>
+                        </tr>
+                        <tr>
+                            <td>疏散引导手势</td>
+                            <td>76%</td>
+                            <td class="action-improvement">需改进</td>
+                            <td>手势不够明显，声音指令可提高</td>
+                        </tr>
+                        <tr>
+                            <td>消防水带连接</td>
+                            <td>92%</td>
+                            <td class="action-correct">正确</td>
+                            <td>连接迅速，接口检查到位</td>
+                        </tr>
+                        <tr>
+                            <td>匍匐前进姿势</td>
+                            <td>65%</td>
+                            <td class="action-incorrect">错误</td>
+                            <td>身体过高，未贴近地面，需加强训练</td>
+                        </tr>
+                        <tr>
+                            <td>伤员搬运方法</td>
+                            <td>82%</td>
+                            <td class="action-improvement">需改进</td>
+                            <td>搬运姿势基本正确，但速度可提升</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="overall-score">
+                    <div>
+                        <div class="score-label">综合得分</div>
+                        <div class="score-value">83</div>
+                        <div>满分100分</div>
+                    </div>
+                    <div>
+                        <p><i class="fas fa-check-circle"></i> 4项动作正确</p>
+                        <p><i class="fas fa-exclamation-triangle"></i> 2项需改进</p>
+                        <p><i class="fas fa-times-circle"></i> 1项错误</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <section class="report-section">
+            <div class="section-title">
+                <i class="fas fa-file-alt"></i>
+                <h2>定制分析报告</h2>
+            </div>
+
+            <div id="alert" class="alert alert-success" style="display: none;">
+                <i class="fas fa-check-circle"></i>
+                <span>报告已生成成功！</span>
+            </div>
+
+            <form id="reportForm" class="report-form">
+                <div class="form-group">
+                    <label for="employeeName">员工姓名</label>
+                    <input type="text" id="employeeName" value="王明" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="employeeId">员工工号</label>
+                    <input type="text" id="employeeId" value="FD-2026-015" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="department">所属部门</label>
+                    <select id="department">
+                        <option value="production">生产一部</option>
+                        <option value="logistics">物流部</option>
+                        <option value="quality">质量部</option>
+                        <option value="administration">行政部</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="reportType">报告类型</label>
+                    <select id="reportType">
+                        <option value="detailed">详细分析报告</option>
+                        <option value="summary">简要总结报告</option>
+                        <option value="training">训练改进建议</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>报告包含内容</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="includeScore" checked>
+                            <label for="includeScore">综合得分</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="includeDetails" checked>
+                            <label for="includeDetails">动作细节分析</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="includeSuggestions" checked>
+                            <label for="includeSuggestions">改进建议</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="includeComparison">
+                            <label for="includeComparison">历史对比</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label for="comments">评语/备注</label>
+                    <textarea id="comments" rows="4" placeholder="请输入对本次演练的评语或额外说明...">该员工整体表现良好，火灾报警和灭火器使用动作标准，但在疏散引导和匍匐前进方面需要加强训练。建议安排专项训练课程。</textarea>
+                </div>
+            </form>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="generateReport">
+                    <i class="fas fa-file-download"></i> 生成分析报告
+                </button>
+                <button class="btn btn-secondary" id="previewReport">
+                    <i class="fas fa-eye"></i> 预览报告
+                </button>
+                <button class="btn btn-secondary" id="resetForm">
+                    <i class="fas fa-redo"></i> 重置表单
+                </button>
+            </div>
+
+            <div id="reportPreview" class="report-preview">
+                <div class="report-header">
+                    <h2>消防演练个人分析报告</h2>
+                    <p>生成日期: 2026年3月9日</p>
+                </div>
+                <div class="report-content">
+                    <h3>员工基本信息</h3>
+                    <p><strong>姓名:</strong> 王明</p>
+                    <p><strong>工号:</strong> FD-2026-015</p>
+                    <p><strong>部门:</strong> 生产一部</p>
+                    <p><strong>演练时间:</strong> 2026年3月9日 10:30 AM</p>
+
+                    <h3 style="margin-top: 20px;">综合评估</h3>
+                    <p><strong>综合得分:</strong> 83/100</p>
+                    <p><strong>评估等级:</strong> 良好</p>
+                    <p><strong>评估总结:</strong> 该员工在本次消防演练中表现良好，掌握了基本的消防技能，但在某些特定环节需要进一步改进。</p>
+
+                    <h3 style="margin-top: 20px;">动作分析详情</h3>
+                    <ul>
+                        <li><strong>火灾报警器操作 (95%):</strong> 动作迅速准确，符合标准流程</li>
+                        <li><strong>灭火器使用姿势 (88%):</strong> 站位合理，灭火器握持正确</li>
+                        <li><strong>疏散引导手势 (76%):</strong> 手势不够明显，声音指令可提高</li>
+                        <li><strong>消防水带连接 (92%):</strong> 连接迅速，接口检查到位</li>
+                        <li><strong>匍匐前进姿势 (65%):</strong> 身体过高，未贴近地面，需加强训练</li>
+                        <li><strong>伤员搬运方法 (82%):</strong> 搬运姿势基本正确，但速度可提升</li>
+                    </ul>
+
+                    <h3 style="margin-top: 20px;">改进建议</h3>
+                    <p>1. 针对疏散引导手势不够明显的问题，建议参加专门的疏散指挥培训</p>
+                    <p>2. 匍匐前进姿势不正确，需加强低姿匍匐训练，确保身体贴近地面</p>
+                    <p>3. 伤员搬运速度有待提高，建议进行力量训练和搬运技巧练习</p>
+
+                    <h3 style="margin-top: 20px;">训练计划</h3>
+                    <p>建议在接下来的一个月内，安排以下专项训练：</p>
+                    <p>1. 每周一次疏散指挥训练 (每次30分钟)</p>
+                    <p>2. 每周两次匍匐前进训练 (每次20分钟)</p>
+                    <p>3. 每月一次综合消防演练</p>
+
+                    <p style="margin-top: 30px; text-align: right;"><strong>评估人:</strong> 消防演练分析系统</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="footer">
+            <p>消防演练动作分析监控系统 &copy; 2026  |  丙午马年 正月廿一</p>
+            <p>本系统用于消防演练动作分析与报告生成，数据仅供参考</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 监控控制按钮
+            const recordBtn = document.getElementById('recordBtn');
+            const snapshotBtn = document.getElementById('snapshotBtn');
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            const monitorScreen = document.querySelector('.monitor-screen');
+
+            let isRecording = false;
+            let snapshotCount = 0;
+
+            recordBtn.addEventListener('click', function() {
+                isRecording = !isRecording;
+                if (isRecording) {
+                    recordBtn.innerHTML = '<i class="fas fa-square"></i>';
+                    recordBtn.style.backgroundColor = '#f44336';
+                    showAlert('开始录制监控视频...', 'info');
+                } else {
+                    recordBtn.innerHTML = '<i class="fas fa-circle"></i>';
+                    recordBtn.style.backgroundColor = '';
+                    showAlert('监控视频已保存', 'success');
+                }
+            });
+
+            snapshotBtn.addEventListener('click', function() {
+                snapshotCount++;
+                showAlert(`已截取监控画面 (${snapshotCount})`, 'info');
+
+                // 模拟截图效果
+                monitorScreen.style.filter = 'brightness(1.5)';
+                setTimeout(() => {
+                    monitorScreen.style.filter = 'brightness(1)';
+                }, 300);
+            });
+
+            fullscreenBtn.addEventListener('click', function() {
+                const container = document.querySelector('.monitor-container');
+                if (!document.fullscreenElement) {
+                    if (container.requestFullscreen) {
+                        container.requestFullscreen();
+                    }
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
+                }
+            });
+
+            // 报告生成功能
+            const generateReportBtn = document.getElementById('generateReport');
+            const previewReportBtn = document.getElementById('previewReport');
+            const resetFormBtn = document.getElementById('resetForm');
+            const reportPreview = document.getElementById('reportPreview');
+            const reportForm = document.getElementById('reportForm');
+            const alertBox = document.getElementById('alert');
+
+            function showAlert(message, type) {
+                alertBox.querySelector('span').textContent = message;
+
+                // 设置不同提示类型
+                if (type === 'success') {
+                    alertBox.className = 'alert alert-success';
+                    alertBox.querySelector('i').className = 'fas fa-check-circle';
+                } else if (type === 'info') {
+                    alertBox.className = 'alert alert-info';
+                    alertBox.querySelector('i').className = 'fas fa-info-circle';
+                } else if (type === 'warning') {
+                    alertBox.className = 'alert alert-warning';
+                    alertBox.querySelector('i').className = 'fas fa-exclamation-triangle';
+                }
+
+                alertBox.style.display = 'flex';
+
+                // 3秒后自动隐藏
+                setTimeout(() => {
+                    alertBox.style.display = 'none';
+                }, 3000);
+            }
+
+            generateReportBtn.addEventListener('click', function() {
+                // 获取表单数据
+                const employeeName = document.getElementById('employeeName').value;
+                const employeeId = document.getElementById('employeeId').value;
+                const department = document.getElementById('department').options[document.getElementById('department').selectedIndex].text;
+                const reportType = document.getElementById('reportType').value;
+                const comments = document.getElementById('comments').value;
+
+                // 显示生成中状态
+                const originalText = generateReportBtn.innerHTML;
+                generateReportBtn.innerHTML = '<div class="loading"></div> 生成中...';
+                generateReportBtn.disabled = true;
+
+                // 模拟生成报告的过程
+                setTimeout(() => {
+                    // 恢复按钮状态
+                    generateReportBtn.innerHTML = originalText;
+                    generateReportBtn.disabled = false;
+
+                    // 显示成功提示
+                    showAlert(`已为 ${employeeName} 生成消防演练分析报告`, 'success');
+
+                    // 这里可以添加实际生成报告的逻辑，如下载PDF等
+                    console.log('生成报告数据:', {
+                        employeeName,
+                        employeeId,
+                        department,
+                        reportType,
+                        comments
+                    });
+                }, 1500);
+            });
+
+            previewReportBtn.addEventListener('click', function() {
+                // 获取表单数据并更新预览
+                const employeeName = document.getElementById('employeeName').value;
+                const employeeId = document.getElementById('employeeId').value;
+                const department = document.getElementById('department').options[document.getElementById('department').selectedIndex].text;
+
+                // 更新预览中的信息
+                const preview = reportPreview.querySelector('.report-content');
+                preview.querySelector('p:nth-child(1)').innerHTML = `<strong>姓名:</strong> ${employeeName}`;
+                preview.querySelector('p:nth-child(2)').innerHTML = `<strong>工号:</strong> ${employeeId}`;
+                preview.querySelector('p:nth-child(3)').innerHTML = `<strong>部门:</strong> ${department}`;
+
+                // 显示预览
+                reportPreview.classList.add('active');
+
+                // 滚动到预览区域
+                reportPreview.scrollIntoView({ behavior: 'smooth' });
+
+                showAlert('报告预览已更新', 'info');
+            });
+
+            resetFormBtn.addEventListener('click', function() {
+                if (confirm('确定要重置表单吗？所有更改将丢失。')) {
+                    reportForm.reset();
+                    reportPreview.classList.remove('active');
+                    showAlert('表单已重置', 'info');
+                }
+            });
+
+            // 模拟实时数据更新
+            function updateMonitoringData() {
+                // 随机更新一个动作的评分
+                const rows = document.querySelectorAll('.analysis-table tbody tr');
+                if (rows.length > 0) {
+                    const randomRow = rows[Math.floor(Math.random() * rows.length)];
+                    const scoreCell = randomRow.cells[1];
+                    const statusCell = randomRow.cells[2];
+                    const currentScore = parseInt(scoreCell.textContent);
+
+                    // 随机增加或减少1-3分
+                    const change = Math.random() > 0.5 ? 1 : -1;
+                    const newScore = Math.max(60, Math.min(100, currentScore + change));
+
+                    // 更新分数
+                    scoreCell.textContent = newScore + '%';
+
+                    // 根据分数更新状态
+                    if (newScore >= 85) {
+                        statusCell.className = 'action-correct';
+                        statusCell.textContent = '正确';
+                    } else if (newScore >= 70) {
+                        statusCell.className = 'action-improvement';
+                        statusCell.textContent = '需改进';
+                    } else {
+                        statusCell.className = 'action-incorrect';
+                        statusCell.textContent = '错误';
+                    }
+
+                    // 更新综合得分
+                    const overallScore = document.querySelector('.score-value');
+                    const currentOverall = parseInt(overallScore.textContent);
+                    const newOverall = Math.max(60, Math.min(100, currentOverall + (change > 0 ? 1 : -1)));
+                    overallScore.textContent = newOverall;
+                }
+            }
+
+            // 每10秒更新一次监控数据
+            setInterval(updateMonitoringData, 10000);
+
+            // 初始显示一个提示
+            setTimeout(() => {
+                showAlert('系统已准备就绪，可以开始生成分析报告', 'info');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
