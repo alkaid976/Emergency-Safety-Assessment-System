@@ -3,858 +3,1626 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>消防演练动作分析监控系统</title>
+    <title>应急安全AI教学系统</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        :root {
+            --primary: #e63946;
+            --primary-light: #ff6b6b;
+            --secondary: #2a5caa;
+            --secondary-light: #4a7dda;
+            --accent: #06d6a0;
+            --dark: #1d3557;
+            --light: #f8f9fa;
+            --gray: #8d99ae;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --radius: 10px;
         }
 
         body {
-            background-color: #f0f2f5;
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: var(--light);
             color: #333;
             line-height: 1.6;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 0 20px;
         }
 
+        /* 头部样式 */
         header {
-            background: linear-gradient(135deg, #1a73e8, #0d47a1);
+            background: linear-gradient(135deg, var(--dark) 0%, var(--secondary) 100%);
             color: white;
-            padding: 20px 30px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            padding: 1.2rem 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .logo-container {
+        .logo {
             display: flex;
             align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 2.2rem;
+            color: var(--accent);
+        }
+
+        .logo-text h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .logo-text p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 6px 12px;
+            border-radius: 4px;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: var(--accent);
+        }
+
+        /* 英雄区域 */
+        .hero {
+            background: linear-gradient(rgba(29, 53, 87, 0.9), rgba(29, 53, 87, 0.95)), url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .hero h2 {
+            font-size: 2.4rem;
+            margin-bottom: 1.2rem;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto 1.8rem;
+            opacity: 0.95;
+        }
+
+        .highlight {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .ai-badge {
+            display: inline-block;
+            background-color: var(--accent);
+            color: var(--dark);
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin: 0 5px;
+        }
+
+        /* 主区域 */
+        .main-content {
+            display: flex;
+            gap: 30px;
+            margin: 3rem 0;
+        }
+
+        .ai-demo-section {
+            flex: 2;
+        }
+
+        .data-feedback {
+            flex: 1;
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            align-self: flex-start;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--primary);
+            display: inline-block;
+        }
+
+        /* AI演示卡片 */
+        .ai-demo-card {
+            background-color: white;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .demo-header {
+            background: linear-gradient(to right, var(--secondary), var(--secondary-light));
+            color: white;
+            padding: 20px 25px;
+        }
+
+        .demo-header h3 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .demo-header h3 i {
+            color: var(--accent);
+        }
+
+        .demo-content {
+            padding: 25px;
+        }
+
+        .demo-subtitle {
+            color: var(--dark);
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .demo-subtitle i {
+            color: var(--primary);
+        }
+
+        .steps-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
             gap: 15px;
         }
 
-        .logo {
-            background-color: white;
-            color: #1a73e8;
-            width: 50px;
-            height: 50px;
+        .step-number {
+            background-color: var(--secondary);
+            color: white;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            font-weight: bold;
+            font-weight: 700;
+            flex-shrink: 0;
         }
 
-        h1 {
-            font-size: 28px;
-            font-weight: 600;
+        .step-content {
+            flex: 1;
         }
 
-        .date-info {
-            font-size: 16px;
-            background-color: rgba(255, 255, 255, 0.15);
-            padding: 8px 15px;
-            border-radius: 20px;
+        .step-content h4 {
+            color: var(--dark);
+            margin-bottom: 5px;
         }
 
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-            margin-bottom: 25px;
+        .step-content p {
+            color: #666;
+            font-size: 0.95rem;
         }
 
-        @media (max-width: 1100px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .monitor-section, .analysis-section {
-            background-color: white;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
-        }
-
-        .section-title {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-
-        .section-title i {
-            color: #1a73e8;
-            font-size: 24px;
-            margin-right: 12px;
-        }
-
-        h2 {
-            font-size: 22px;
-            color: #1a73e8;
-        }
-
-        .monitor-container {
-            position: relative;
-            background-color: #000;
+        /* AI反馈区域 */
+        .ai-feedback {
+            background-color: #f0f7ff;
             border-radius: 8px;
-            overflow: hidden;
-            height: 400px;
-            margin-bottom: 20px;
+            padding: 20px;
+            border-left: 4px solid var(--accent);
+            margin-top: 20px;
         }
 
-        .monitor-screen {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .monitor-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
-        }
-
-        .monitor-status {
-            color: white;
-            font-weight: 500;
+        .ai-feedback h4 {
+            color: var(--dark);
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 8px;
+        }
+
+        .ai-feedback h4 i {
+            color: var(--accent);
+        }
+
+        .feedback-message {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            border: 1px solid #e0e0e0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .feedback-message.correct {
+            border-left: 4px solid var(--accent);
+        }
+
+        .feedback-message.incorrect {
+            border-left: 4px solid var(--primary);
+        }
+
+        .feedback-message .ai-avatar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .feedback-message .ai-avatar i {
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-light);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--secondary-light);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--secondary);
+            border: 2px solid var(--secondary);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(42, 92, 170, 0.1);
+        }
+
+        /* 数据反馈样式 */
+        .data-title {
+            font-size: 1.4rem;
+            color: var(--dark);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .data-title i {
+            color: var(--accent);
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-box {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .skill-progress {
+            margin-bottom: 20px;
+        }
+
+        .skill-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .skill-name {
+            font-weight: 500;
+        }
+
+        .skill-percent {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 1.5s ease;
+        }
+
+        .chart-container {
+            height: 250px;
+            margin-top: 20px;
+        }
+
+        .recommendation {
+            background-color: #f0f7ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .recommendation h4 {
+            color: var(--dark);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 实时训练界面 */
+        .training-interface {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .training-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .training-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .status-indicator {
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            background-color: #4caf50;
-            animation: pulse 2s infinite;
+            background-color: var(--accent);
         }
 
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+        .training-timer {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
         }
 
-        .monitor-controls {
+        .training-instructions {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .training-instructions h5 {
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+
+        .training-steps {
             display: flex;
+            flex-direction: column;
             gap: 10px;
         }
 
-        .control-btn {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: none;
-            width: 40px;
-            height: 40px;
+        .training-step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-check {
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
-            cursor: pointer;
+            background-color: #e9ecef;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background-color 0.3s;
+            color: #999;
         }
 
-        .control-btn:hover {
-            background-color: rgba(255, 255, 255, 0.3);
+        .step-check.completed {
+            background-color: var(--accent);
+            color: white;
         }
 
-        .analysis-result {
+        .training-progress {
             margin-top: 20px;
         }
 
-        .person-info {
+        .progress-info {
             display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-        }
-
-        .avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background-color: #1a73e8;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .person-details h3 {
-            font-size: 20px;
+            justify-content: space-between;
             margin-bottom: 5px;
         }
 
-        .analysis-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        .analysis-table th, .analysis-table td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-        }
-
-        .analysis-table th {
-            background-color: #f8f9fa;
-            font-weight: 600;
-            color: #1a73e8;
-        }
-
-        .action-correct {
-            color: #4caf50;
-            font-weight: 600;
-        }
-
-        .action-incorrect {
-            color: #f44336;
-            font-weight: 600;
-        }
-
-        .action-improvement {
-            color: #ff9800;
-            font-weight: 600;
-        }
-
-        .overall-score {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 25px;
-            padding: 20px;
-            background: linear-gradient(135deg, #1a73e8, #0d47a1);
-            color: white;
-            border-radius: 10px;
-        }
-
-        .score-value {
-            font-size: 48px;
-            font-weight: bold;
-        }
-
-        .score-label {
-            font-size: 18px;
-        }
-
-        .report-section {
-            background-color: white;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
-            margin-top: 20px;
-        }
-
-        .report-form {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #555;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border 0.3s;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            border-color: #1a73e8;
-            outline: none;
-        }
-
-        .checkbox-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 10px;
-        }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-        }
-
-        .btn {
-            padding: 14px 28px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .btn-primary {
-            background-color: #1a73e8;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: #0d62d9;
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background-color: #f8f9fa;
-            color: #333;
-            border: 1px solid #ddd;
-        }
-
-        .btn-secondary:hover {
+        .progress-bar-large {
+            height: 8px;
             background-color: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
         }
 
-        .report-preview {
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 30px;
-            display: none;
+        .progress-fill-large {
+            height: 100%;
+            border-radius: 4px;
+            background-color: var(--primary);
+            width: 0;
+            transition: width 0.5s ease;
         }
 
-        .report-preview.active {
-            display: block;
+        /* 其他体验区 */
+        .other-experiences {
+            margin-top: 4rem;
         }
 
-        .report-header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #ddd;
+        .exp-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
         }
 
-        .report-content {
-            padding: 20px;
+        .exp-card {
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
 
-        .footer {
-            text-align: center;
-            margin-top: 40px;
-            padding: 20px;
-            color: #666;
-            font-size: 14px;
-            border-top: 1px solid #eee;
-        }
-
-        .alert {
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+        .exp-card h4 {
+            color: var(--dark);
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .alert-success {
-            background-color: #e8f5e9;
-            color: #2e7d32;
-            border-left: 4px solid #4caf50;
+        .exp-card h4 i {
+            color: var(--primary);
         }
 
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
+        .exp-card ul {
+            padding-left: 20px;
+            color: #666;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .exp-card li {
+            margin-bottom: 8px;
+        }
+
+        /* 页脚 */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 3rem 0 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-bottom: 2rem;
+        }
+
+        .footer-column {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .footer-column h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1.2rem;
+            color: var(--accent);
+        }
+
+        .footer-links a {
+            display: block;
+            color: #ddd;
+            text-decoration: none;
+            margin-bottom: 10px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .hero h2 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .hero h2 {
+                font-size: 1.7rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- 头部导航 -->
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>应急安全AI教学系统</h1>
+                    <p>专注于消防与心肺复苏的AI一对一教学</p>
+                </div>
+            </div>
+            <nav class="nav-links">
+                <a href="#home" class="active">首页</a>
+                <a href="#fire">消防AI教学</a>
+                <a href="#cpr">心肺复苏AI教练</a>
+                <a href="#data">数据反馈</a>
+                <a href="#other">其他体验区</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 英雄区域 -->
+    <section class="hero" id="home">
+        <div class="container">
+            <h2>AI一对一教学，让安全技能<span class="highlight">人人掌握</span></h2>
+            <p>本系统专注于<span class="ai-badge">消防</span>和<span class="ai-badge">心肺复苏</span>两大核心安全技能，通过AI实时动作识别与纠正，提供一对一专家辅导。后台自动积累数据，为针对性培训提供科学依据。</p>
+        </div>
+    </section>
+
     <div class="container">
-        <header>
-            <div class="logo-container">
-                <div class="logo">F</div>
-                <div>
-                    <h1>消防演练动作分析监控系统</h1>
-                    <p>实时动作识别与训练报告生成</p>
-                </div>
-            </div>
-            <div class="date-info">
-                <i class="far fa-calendar-alt"></i> 2026年3月9日 星期一
-            </div>
-        </header>
-
         <div class="main-content">
-            <section class="monitor-section">
-                <div class="section-title">
-                    <i class="fas fa-video"></i>
-                    <h2>实时监控画面</h2>
-                </div>
-
-                <div class="monitor-container">
-                    <div class="monitor-overlay">
-                        <div class="monitor-status">
-                            <div class="status-indicator"></div>
-                            <span>监控信号正常 - 消防演练区域A</span>
+            <!-- 左侧：AI演示区域 -->
+            <div class="ai-demo-section">
+                <!-- 1号车：消防安全AI教学 -->
+                <div id="fire" class="ai-demo-card">
+                    <div class="demo-header">
+                        <h3><i class="fas fa-fire-extinguisher"></i> 一号车：消防安全AI教学</h3>
+                    </div>
+                    <div class="demo-content">
+                        <div class="demo-subtitle">
+                            <i class="fas fa-robot"></i> AI一对一消防技能教学
                         </div>
-                        <div class="monitor-controls">
-                            <button class="control-btn" id="recordBtn">
-                                <i class="fas fa-circle"></i>
+
+                        <div class="steps-container">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4>民用消防栓使用教学</h4>
+                                    <p>AI通过摄像头实时识别体验者的动作，监测"提、拔、握、压"四个核心动作的标准性。</p>
+                                </div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4>模拟119报警训练</h4>
+                                    <p>AI模拟接警员对话，引导体验者准确报告关键信息：地址、火情、姓名，并评估信息完整性。</p>
+                                </div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4>实时纠正与反馈</h4>
+                                    <p>AI在体验过程中即时提供语音和视觉反馈，纠正错误动作，强化正确操作。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ai-feedback">
+                            <h4><i class="fas fa-comment-dots"></i> AI实时反馈</h4>
+
+                            <div class="feedback-message incorrect" id="fireFeedback1">
+                                <div class="ai-avatar">
+                                    <i class="fas fa-robot"></i>
+                                    <span><strong>AI教练：</strong>准备就绪</span>
+                                </div>
+                                <p>请开始消防训练，系统将实时监测您的动作并提供指导。</p>
+                            </div>
+
+                            <div class="feedback-message correct" id="fireFeedback2" style="display: none;">
+                                <div class="ai-avatar">
+                                    <i class="fas fa-robot"></i>
+                                    <span><strong>AI教练：</strong>动作识别完成</span>
+                                </div>
+                                <p>非常好！您完成了"提、拔、握、压"四个动作，流程完整，动作标准。请记住，灭火时要对准火焰根部喷射。</p>
+                            </div>
+                        </div>
+
+                        <!-- 实时训练界面 -->
+                        <div class="training-interface" id="fireTraining" style="display: none;">
+                            <div class="training-header">
+                                <div class="training-status">
+                                    <div class="status-indicator"></div>
+                                    <span>消防训练进行中</span>
+                                </div>
+                                <div class="training-timer" id="fireTimer">00:00</div>
+                            </div>
+
+                            <div class="training-instructions">
+                                <h5>当前训练步骤</h5>
+                                <div class="training-steps">
+                                    <div class="training-step">
+                                        <div class="step-check" id="fireStep1">1</div>
+                                        <span>提起灭火器</span>
+                                    </div>
+                                    <div class="training-step">
+                                        <div class="step-check" id="fireStep2">2</div>
+                                        <span>拔出保险销</span>
+                                    </div>
+                                    <div class="training-step">
+                                        <div class="step-check" id="fireStep3">3</div>
+                                        <span>握住喷管前端</span>
+                                    </div>
+                                    <div class="training-step">
+                                        <div class="step-check" id="fireStep4">4</div>
+                                        <span>压下压把对准火焰</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="training-progress">
+                                <div class="progress-info">
+                                    <span>训练进度</span>
+                                    <span id="fireProgressPercent">0%</span>
+                                </div>
+                                <div class="progress-bar-large">
+                                    <div class="progress-fill-large" id="fireProgressBar"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" id="startFireBtn" onclick="startFireTraining()">
+                                <i class="fas fa-play-circle"></i> 开始消防训练
                             </button>
-                            <button class="control-btn" id="snapshotBtn">
-                                <i class="fas fa-camera"></i>
+                            <button class="btn btn-outline" id="resetFireBtn" onclick="resetFireTraining()" style="display: none;">
+                                <i class="fas fa-redo"></i> 重新开始
                             </button>
-                            <button class="control-btn" id="fullscreenBtn">
-                                <i class="fas fa-expand"></i>
+                            <button class="btn btn-outline" onclick="showFireTips()">
+                                <i class="fas fa-lightbulb"></i> 查看动作要点
                             </button>
                         </div>
                     </div>
-                    <img src="https://images.unsplash.com/photo-1615870216519-2f9fa575fa5c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="消防演练监控画面" class="monitor-screen">
                 </div>
 
-                <div class="person-info">
-                    <div class="avatar">王</div>
-                    <div class="person-details">
-                        <h3>王明 (工号: FD-2026-015)</h3>
-                        <p>部门: 生产一部 | 职位: 安全员 | 演练时间: 2026-03-09 10:30 AM</p>
+                <!-- 7号体验区：心肺复苏AI教练 -->
+                <div id="cpr" class="ai-demo-card">
+                    <div class="demo-header">
+                        <h3><i class="fas fa-heartbeat"></i> 七号体验区：心肺复苏AI教练</h3>
+                    </div>
+                    <div class="demo-content">
+                        <div class="demo-subtitle">
+                            <i class="fas fa-robot"></i> AI全程核对流程与动作，实时纠正
+                        </div>
+
+                        <div class="steps-container">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4>施救流程监测</h4>
+                                    <p>AI监测完整施救流程：先大声拍打判断意识，再清理口腔异物、呼叫120，然后开始心肺复苏。</p>
+                                </div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4>动作标准度识别</h4>
+                                    <p>实时监测手掌位置、胳膊是否伸直、按压深度和频率（100-120次/分钟）。</p>
+                                </div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4>循环训练指导</h4>
+                                    <p>指导体验者完成30次胸外按压+2次人工呼吸为一组的循环，并提供节奏提示音。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ai-feedback">
+                            <h4><i class="fas fa-comment-dots"></i> AI实时反馈</h4>
+
+                            <div class="feedback-message incorrect" id="cprFeedback1">
+                                <div class="ai-avatar">
+                                    <i class="fas fa-robot"></i>
+                                    <span><strong>AI教练：</strong>准备就绪</span>
+                                </div>
+                                <p>请开始心肺复苏训练，系统将实时监测您的动作并提供指导。</p>
+                            </div>
+
+                            <div class="feedback-message correct" id="cprFeedback2" style="display: none;">
+                                <div class="ai-avatar">
+                                    <i class="fas fa-robot"></i>
+                                    <span><strong>AI教练：</strong>动作识别完成</span>
+                                </div>
+                                <p>优秀！手掌位置正确，手臂伸直，按压深度5.2cm，频率112次/分钟。请继续完成2次人工呼吸，注意开放气道。</p>
+                            </div>
+                        </div>
+
+                        <!-- 实时训练界面 -->
+                        <div class="training-interface" id="cprTraining" style="display: none;">
+                            <div class="training-header">
+                                <div class="training-status">
+                                    <div class="status-indicator"></div>
+                                    <span>心肺复苏训练进行中</span>
+                                </div>
+                                <div class="training-timer" id="cprTimer">00:00</div>
+                            </div>
+
+                            <div class="training-instructions">
+                                <h5>当前训练步骤</h5>
+                                <div class="training-steps">
+                                    <div class="training-step">
+                                        <div class="step-check" id="cprStep1">1</div>
+                                        <span>评估意识与呼吸</span>
+                                    </div>
+                                    <div class="training-step">
+                                        <div class="step-check" id="cprStep2">2</div>
+                                        <span>呼叫120，获取AED</span>
+                                    </div>
+                                    <div class="training-step">
+                                        <div class="step-check" id="cprStep3">3</div>
+                                        <span>开始胸外按压</span>
+                                    </div>
+                                    <div class="training-step">
+                                        <div class="step-check" id="cprStep4">4</div>
+                                        <span>人工呼吸（2次）</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="training-progress">
+                                <div class="progress-info">
+                                    <span>训练进度</span>
+                                    <span id="cprProgressPercent">0%</span>
+                                </div>
+                                <div class="progress-bar-large">
+                                    <div class="progress-fill-large" id="cprProgressBar"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" id="startCPRBtn" onclick="startCPRTraining()">
+                                <i class="fas fa-play-circle"></i> 开始心肺复苏训练
+                            </button>
+                            <button class="btn btn-outline" id="resetCPRBtn" onclick="resetCPRTraining()" style="display: none;">
+                                <i class="fas fa-redo"></i> 重新开始
+                            </button>
+                            <button class="btn btn-outline" onclick="showCPRTips()">
+                                <i class="fas fa-lightbulb"></i> 查看操作要点
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <section class="analysis-section">
-                <div class="section-title">
-                    <i class="fas fa-chart-bar"></i>
-                    <h2>动作分析结果</h2>
-                </div>
+            <!-- 右侧：数据反馈面板 -->
+            <div id="data" class="data-feedback">
+                <h3 class="data-title"><i class="fas fa-chart-bar"></i> 数据反馈面板</h3>
+                <p>当前体验者技能数据分析</p>
 
-                <table class="analysis-table">
-                    <thead>
-                        <tr>
-                            <th>动作名称</th>
-                            <th>标准度</th>
-                            <th>完成状态</th>
-                            <th>分析结果</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>火灾报警器操作</td>
-                            <td>95%</td>
-                            <td class="action-correct">正确</td>
-                            <td>动作迅速准确，符合标准流程</td>
-                        </tr>
-                        <tr>
-                            <td>灭火器使用姿势</td>
-                            <td>88%</td>
-                            <td class="action-correct">正确</td>
-                            <td>站位合理，灭火器握持正确</td>
-                        </tr>
-                        <tr>
-                            <td>疏散引导手势</td>
-                            <td>76%</td>
-                            <td class="action-improvement">需改进</td>
-                            <td>手势不够明显，声音指令可提高</td>
-                        </tr>
-                        <tr>
-                            <td>消防水带连接</td>
-                            <td>92%</td>
-                            <td class="action-correct">正确</td>
-                            <td>连接迅速，接口检查到位</td>
-                        </tr>
-                        <tr>
-                            <td>匍匐前进姿势</td>
-                            <td>65%</td>
-                            <td class="action-incorrect">错误</td>
-                            <td>身体过高，未贴近地面，需加强训练</td>
-                        </tr>
-                        <tr>
-                            <td>伤员搬运方法</td>
-                            <td>82%</td>
-                            <td class="action-improvement">需改进</td>
-                            <td>搬运姿势基本正确，但速度可提升</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <div class="overall-score">
-                    <div>
-                        <div class="score-label">综合得分</div>
-                        <div class="score-value">83</div>
-                        <div>满分100分</div>
+                <div class="stats-container">
+                    <div class="stat-box">
+                        <div class="stat-value" id="totalParticipants">24</div>
+                        <div class="stat-label">今日体验人数</div>
                     </div>
-                    <div>
-                        <p><i class="fas fa-check-circle"></i> 4项动作正确</p>
-                        <p><i class="fas fa-exclamation-triangle"></i> 2项需改进</p>
-                        <p><i class="fas fa-times-circle"></i> 1项错误</p>
+                    <div class="stat-box">
+                        <div class="stat-value" id="avgScore">76%</div>
+                        <div class="stat-label">平均掌握率</div>
                     </div>
                 </div>
-            </section>
+
+                <h4>技能掌握情况</h4>
+                <div class="skill-progress">
+                    <div class="skill-label">
+                        <span class="skill-name">消防栓操作规范</span>
+                        <span class="skill-percent">68%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="fireSkillBar" style="width: 68%; background-color: #e63946;"></div>
+                    </div>
+                </div>
+
+                <div class="skill-progress">
+                    <div class="skill-label">
+                        <span class="skill-name">119报警信息完整度</span>
+                        <span class="skill-percent">72%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="callSkillBar" style="width: 72%; background-color: #2a5caa;"></div>
+                    </div>
+                </div>
+
+                <div class="skill-progress">
+                    <div class="skill-label">
+                        <span class="skill-name">心肺复苏按压合格率</span>
+                        <span class="skill-percent">45%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="cprSkillBar" style="width: 45%; background-color: #06d6a0;"></div>
+                    </div>
+                </div>
+
+                <div class="skill-progress">
+                    <div class="skill-label">
+                        <span class="skill-name">施救流程规范性</span>
+                        <span class="skill-percent">58%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="processSkillBar" style="width: 58%; background-color: #8d99ae;"></div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="skillChart"></canvas>
+                </div>
+
+                <div class="recommendation">
+                    <h4><i class="fas fa-lightbulb"></i> 培训建议</h4>
+                    <p>根据数据分析，当前体验者在<strong>心肺复苏按压合格率（45%）</strong>和<strong>施救流程规范性（58%）</strong>方面表现较弱。建议在后续培训中加强心肺复苏专项训练，特别是按压深度和频率的练习。</p>
+                </div>
+
+                <div style="margin-top: 20px; text-align: center;">
+                    <button class="btn btn-secondary" onclick="generateReport()" style="width: 100%;">
+                        <i class="fas fa-download"></i> 生成详细数据报告
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <section class="report-section">
-            <div class="section-title">
-                <i class="fas fa-file-alt"></i>
-                <h2>定制分析报告</h2>
-            </div>
+        <!-- 其他体验区 -->
+        <div id="other" class="other-experiences">
+            <h3 class="section-title">其他安全体验区</h3>
+            <p style="margin-bottom: 20px;">以下体验区提供基础安全知识学习：</p>
 
-            <div id="alert" class="alert alert-success" style="display: none;">
-                <i class="fas fa-check-circle"></i>
-                <span>报告已生成成功！</span>
-            </div>
-
-            <form id="reportForm" class="report-form">
-                <div class="form-group">
-                    <label for="employeeName">员工姓名</label>
-                    <input type="text" id="employeeName" value="王明" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="employeeId">员工工号</label>
-                    <input type="text" id="employeeId" value="FD-2026-015" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="department">所属部门</label>
-                    <select id="department">
-                        <option value="production">生产一部</option>
-                        <option value="logistics">物流部</option>
-                        <option value="quality">质量部</option>
-                        <option value="administration">行政部</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="reportType">报告类型</label>
-                    <select id="reportType">
-                        <option value="detailed">详细分析报告</option>
-                        <option value="summary">简要总结报告</option>
-                        <option value="training">训练改进建议</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>报告包含内容</label>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="includeScore" checked>
-                            <label for="includeScore">综合得分</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="includeDetails" checked>
-                            <label for="includeDetails">动作细节分析</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="includeSuggestions" checked>
-                            <label for="includeSuggestions">改进建议</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="includeComparison">
-                            <label for="includeComparison">历史对比</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group" style="grid-column: 1 / -1;">
-                    <label for="comments">评语/备注</label>
-                    <textarea id="comments" rows="4" placeholder="请输入对本次演练的评语或额外说明...">该员工整体表现良好，火灾报警和灭火器使用动作标准，但在疏散引导和匍匐前进方面需要加强训练。建议安排专项训练课程。</textarea>
-                </div>
-            </form>
-
-            <div class="action-buttons">
-                <button class="btn btn-primary" id="generateReport">
-                    <i class="fas fa-file-download"></i> 生成分析报告
-                </button>
-                <button class="btn btn-secondary" id="previewReport">
-                    <i class="fas fa-eye"></i> 预览报告
-                </button>
-                <button class="btn btn-secondary" id="resetForm">
-                    <i class="fas fa-redo"></i> 重置表单
-                </button>
-            </div>
-
-            <div id="reportPreview" class="report-preview">
-                <div class="report-header">
-                    <h2>消防演练个人分析报告</h2>
-                    <p>生成日期: 2026年3月9日</p>
-                </div>
-                <div class="report-content">
-                    <h3>员工基本信息</h3>
-                    <p><strong>姓名:</strong> 王明</p>
-                    <p><strong>工号:</strong> FD-2026-015</p>
-                    <p><strong>部门:</strong> 生产一部</p>
-                    <p><strong>演练时间:</strong> 2026年3月9日 10:30 AM</p>
-
-                    <h3 style="margin-top: 20px;">综合评估</h3>
-                    <p><strong>综合得分:</strong> 83/100</p>
-                    <p><strong>评估等级:</strong> 良好</p>
-                    <p><strong>评估总结:</strong> 该员工在本次消防演练中表现良好，掌握了基本的消防技能，但在某些特定环节需要进一步改进。</p>
-
-                    <h3 style="margin-top: 20px;">动作分析详情</h3>
+            <div class="exp-cards">
+                <div class="exp-card">
+                    <h4><i class="fas fa-bolt"></i> 二号车：用电安全风险测评</h4>
+                    <p>互动提问方式，体验者扫码填写年龄，系统根据年龄匹配不同的选择题。</p>
                     <ul>
-                        <li><strong>火灾报警器操作 (95%):</strong> 动作迅速准确，符合标准流程</li>
-                        <li><strong>灭火器使用姿势 (88%):</strong> 站位合理，灭火器握持正确</li>
-                        <li><strong>疏散引导手势 (76%):</strong> 手势不够明显，声音指令可提高</li>
-                        <li><strong>消防水带连接 (92%):</strong> 连接迅速，接口检查到位</li>
-                        <li><strong>匍匐前进姿势 (65%):</strong> 身体过高，未贴近地面，需加强训练</li>
-                        <li><strong>伤员搬运方法 (82%):</strong> 搬运姿势基本正确，但速度可提升</li>
+                        <li>系统评价 + 讲解错题</li>
+                        <li>安全用电知识学习</li>
+                        <li>常见隐患识别训练</li>
                     </ul>
+                </div>
 
-                    <h3 style="margin-top: 20px;">改进建议</h3>
-                    <p>1. 针对疏散引导手势不够明显的问题，建议参加专门的疏散指挥培训</p>
-                    <p>2. 匍匐前进姿势不正确，需加强低姿匍匐训练，确保身体贴近地面</p>
-                    <p>3. 伤员搬运速度有待提高，建议进行力量训练和搬运技巧练习</p>
+                <div class="exp-card">
+                    <h4><i class="fas fa-smog"></i> 三号车：烟雾逃生</h4>
+                    <p>模拟浓烟弥漫的逃生环境，训练正确逃生动作。</p>
+                    <ul>
+                        <li>弯腰低姿前进</li>
+                        <li>用湿毛巾捂住口鼻</li>
+                        <li>沿墙摸索安全出口</li>
+                    </ul>
+                </div>
 
-                    <h3 style="margin-top: 20px;">训练计划</h3>
-                    <p>建议在接下来的一个月内，安排以下专项训练：</p>
-                    <p>1. 每周一次疏散指挥训练 (每次30分钟)</p>
-                    <p>2. 每周两次匍匐前进训练 (每次20分钟)</p>
-                    <p>3. 每月一次综合消防演练</p>
-
-                    <p style="margin-top: 30px; text-align: right;"><strong>评估人:</strong> 消防演练分析系统</p>
+                <div class="exp-card">
+                    <h4><i class="fas fa-vr-cardboard"></i> 五号车：VR地震演练</h4>
+                    <p>通过VR技术体验地震灾害场景，训练结构化应急流程。</p>
+                    <ul>
+                        <li>警报响起躲到床下</li>
+                        <li>拿抱枕遮挡头部</li>
+                        <li>稳定时转移，绕开水池</li>
+                        <li>上下楼不坐电梯</li>
+                    </ul>
                 </div>
             </div>
-        </section>
-
-        <div class="footer">
-            <p>消防演练动作分析监控系统 &copy; 2026  |  丙午马年 正月廿一</p>
-            <p>本系统用于消防演练动作分析与报告生成，数据仅供参考</p>
         </div>
     </div>
 
+    <!-- 页脚 -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>应急安全AI教学系统</h3>
+                    <p>专注于消防与心肺复苏的AI一对一教学，通过实时动作识别与纠正，提升安全技能培训效果。</p>
+                    <div style="margin-top: 20px;">
+                        <p><i class="fas fa-phone-alt"></i> 服务热线：400-123-4567</p>
+                        <p><i class="fas fa-envelope"></i> 邮箱：safety-ai@example.com</p>
+                    </div>
+                </div>
+
+                <div class="footer-column">
+                    <h3>AI教学重点</h3>
+                    <div class="footer-links">
+                        <a href="#fire">消防栓使用（提拔握压）</a>
+                        <a href="#fire">模拟119报警对话</a>
+                        <a href="#cpr">心肺复苏流程监测</a>
+                        <a href="#cpr">按压动作实时纠正</a>
+                        <a href="#data">技能数据积累分析</a>
+                    </div>
+                </div>
+
+                <div class="footer-column">
+                    <h3>其他体验区</h3>
+                    <div class="footer-links">
+                        <a href="#other">二号车：电路安全</a>
+                        <a href="#other">三号车：烟雾逃生</a>
+                        <a href="#other">五号车：VR地震演练</a>
+                        <a href="#other">四号车：燃气与电动车安全</a>
+                        <a href="#other">教育式火灾模拟器</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="copyright">
+                <p>&copy; 2023 应急安全AI教学系统</p>
+            </div>
+        </div>
+    </footer>
+
     <script>
+        // 初始化图表
         document.addEventListener('DOMContentLoaded', function() {
-            // 监控控制按钮
-            const recordBtn = document.getElementById('recordBtn');
-            const snapshotBtn = document.getElementById('snapshotBtn');
-            const fullscreenBtn = document.getElementById('fullscreenBtn');
-            const monitorScreen = document.querySelector('.monitor-screen');
-
-            let isRecording = false;
-            let snapshotCount = 0;
-
-            recordBtn.addEventListener('click', function() {
-                isRecording = !isRecording;
-                if (isRecording) {
-                    recordBtn.innerHTML = '<i class="fas fa-square"></i>';
-                    recordBtn.style.backgroundColor = '#f44336';
-                    showAlert('开始录制监控视频...', 'info');
-                } else {
-                    recordBtn.innerHTML = '<i class="fas fa-circle"></i>';
-                    recordBtn.style.backgroundColor = '';
-                    showAlert('监控视频已保存', 'success');
-                }
-            });
-
-            snapshotBtn.addEventListener('click', function() {
-                snapshotCount++;
-                showAlert(`已截取监控画面 (${snapshotCount})`, 'info');
-
-                // 模拟截图效果
-                monitorScreen.style.filter = 'brightness(1.5)';
-                setTimeout(() => {
-                    monitorScreen.style.filter = 'brightness(1)';
-                }, 300);
-            });
-
-            fullscreenBtn.addEventListener('click', function() {
-                const container = document.querySelector('.monitor-container');
-                if (!document.fullscreenElement) {
-                    if (container.requestFullscreen) {
-                        container.requestFullscreen();
-                    }
-                } else {
-                    if (document.exitFullscreen) {
-                        document.exitFullscreen();
-                    }
-                }
-            });
-
-            // 报告生成功能
-            const generateReportBtn = document.getElementById('generateReport');
-            const previewReportBtn = document.getElementById('previewReport');
-            const resetFormBtn = document.getElementById('resetForm');
-            const reportPreview = document.getElementById('reportPreview');
-            const reportForm = document.getElementById('reportForm');
-            const alertBox = document.getElementById('alert');
-
-            function showAlert(message, type) {
-                alertBox.querySelector('span').textContent = message;
-
-                // 设置不同提示类型
-                if (type === 'success') {
-                    alertBox.className = 'alert alert-success';
-                    alertBox.querySelector('i').className = 'fas fa-check-circle';
-                } else if (type === 'info') {
-                    alertBox.className = 'alert alert-info';
-                    alertBox.querySelector('i').className = 'fas fa-info-circle';
-                } else if (type === 'warning') {
-                    alertBox.className = 'alert alert-warning';
-                    alertBox.querySelector('i').className = 'fas fa-exclamation-triangle';
-                }
-
-                alertBox.style.display = 'flex';
-
-                // 3秒后自动隐藏
-                setTimeout(() => {
-                    alertBox.style.display = 'none';
-                }, 3000);
-            }
-
-            generateReportBtn.addEventListener('click', function() {
-                // 获取表单数据
-                const employeeName = document.getElementById('employeeName').value;
-                const employeeId = document.getElementById('employeeId').value;
-                const department = document.getElementById('department').options[document.getElementById('department').selectedIndex].text;
-                const reportType = document.getElementById('reportType').value;
-                const comments = document.getElementById('comments').value;
-
-                // 显示生成中状态
-                const originalText = generateReportBtn.innerHTML;
-                generateReportBtn.innerHTML = '<div class="loading"></div> 生成中...';
-                generateReportBtn.disabled = true;
-
-                // 模拟生成报告的过程
-                setTimeout(() => {
-                    // 恢复按钮状态
-                    generateReportBtn.innerHTML = originalText;
-                    generateReportBtn.disabled = false;
-
-                    // 显示成功提示
-                    showAlert(`已为 ${employeeName} 生成消防演练分析报告`, 'success');
-
-                    // 这里可以添加实际生成报告的逻辑，如下载PDF等
-                    console.log('生成报告数据:', {
-                        employeeName,
-                        employeeId,
-                        department,
-                        reportType,
-                        comments
-                    });
-                }, 1500);
-            });
-
-            previewReportBtn.addEventListener('click', function() {
-                // 获取表单数据并更新预览
-                const employeeName = document.getElementById('employeeName').value;
-                const employeeId = document.getElementById('employeeId').value;
-                const department = document.getElementById('department').options[document.getElementById('department').selectedIndex].text;
-
-                // 更新预览中的信息
-                const preview = reportPreview.querySelector('.report-content');
-                preview.querySelector('p:nth-child(1)').innerHTML = `<strong>姓名:</strong> ${employeeName}`;
-                preview.querySelector('p:nth-child(2)').innerHTML = `<strong>工号:</strong> ${employeeId}`;
-                preview.querySelector('p:nth-child(3)').innerHTML = `<strong>部门:</strong> ${department}`;
-
-                // 显示预览
-                reportPreview.classList.add('active');
-
-                // 滚动到预览区域
-                reportPreview.scrollIntoView({ behavior: 'smooth' });
-
-                showAlert('报告预览已更新', 'info');
-            });
-
-            resetFormBtn.addEventListener('click', function() {
-                if (confirm('确定要重置表单吗？所有更改将丢失。')) {
-                    reportForm.reset();
-                    reportPreview.classList.remove('active');
-                    showAlert('表单已重置', 'info');
-                }
-            });
-
-            // 模拟实时数据更新
-            function updateMonitoringData() {
-                // 随机更新一个动作的评分
-                const rows = document.querySelectorAll('.analysis-table tbody tr');
-                if (rows.length > 0) {
-                    const randomRow = rows[Math.floor(Math.random() * rows.length)];
-                    const scoreCell = randomRow.cells[1];
-                    const statusCell = randomRow.cells[2];
-                    const currentScore = parseInt(scoreCell.textContent);
-
-                    // 随机增加或减少1-3分
-                    const change = Math.random() > 0.5 ? 1 : -1;
-                    const newScore = Math.max(60, Math.min(100, currentScore + change));
-
-                    // 更新分数
-                    scoreCell.textContent = newScore + '%';
-
-                    // 根据分数更新状态
-                    if (newScore >= 85) {
-                        statusCell.className = 'action-correct';
-                        statusCell.textContent = '正确';
-                    } else if (newScore >= 70) {
-                        statusCell.className = 'action-improvement';
-                        statusCell.textContent = '需改进';
-                    } else {
-                        statusCell.className = 'action-incorrect';
-                        statusCell.textContent = '错误';
-                    }
-
-                    // 更新综合得分
-                    const overallScore = document.querySelector('.score-value');
-                    const currentOverall = parseInt(overallScore.textContent);
-                    const newOverall = Math.max(60, Math.min(100, currentOverall + (change > 0 ? 1 : -1)));
-                    overallScore.textContent = newOverall;
-                }
-            }
-
-            // 每10秒更新一次监控数据
-            setInterval(updateMonitoringData, 10000);
-
-            // 初始显示一个提示
+            // 设置进度条动画
             setTimeout(() => {
-                showAlert('系统已准备就绪，可以开始生成分析报告', 'info');
+                document.getElementById('fireSkillBar').style.width = '68%';
+                document.getElementById('callSkillBar').style.width = '72%';
+                document.getElementById('cprSkillBar').style.width = '45%';
+                document.getElementById('processSkillBar').style.width = '58%';
+            }, 500);
+
+            // 创建技能掌握情况图表
+            const ctx = document.getElementById('skillChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['消防栓操作', '119报警', '心肺复苏按压', '施救流程'],
+                    datasets: [{
+                        label: '技能掌握率 (%)',
+                        data: [68, 72, 45, 58],
+                        backgroundColor: [
+                            '#e63946',
+                            '#2a5caa',
+                            '#06d6a0',
+                            '#8d99ae'
+                        ],
+                        borderColor: [
+                            '#c1121f',
+                            '#1d3557',
+                            '#04a37a',
+                            '#6c757d'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+        // 消防训练相关变量
+        let fireTimer = null;
+        let fireSeconds = 0;
+        let fireTrainingActive = false;
+        let fireStep = 0;
+
+        // 心肺复苏训练相关变量
+        let cprTimer = null;
+        let cprSeconds = 0;
+        let cprTrainingActive = false;
+        let cprStep = 0;
+
+        // 消防训练功能
+        function startFireTraining() {
+            if (fireTrainingActive) return;
+
+            fireTrainingActive = true;
+            fireSeconds = 0;
+            fireStep = 0;
+
+            // 重置步骤
+            resetFireSteps();
+
+            // 更新训练界面显示
+            document.getElementById('fireTraining').style.display = 'block';
+            document.getElementById('startFireBtn').style.display = 'none';
+            document.getElementById('resetFireBtn').style.display = 'inline-block';
+            document.getElementById('fireFeedback1').style.display = 'none';
+            document.getElementById('fireFeedback2').style.display = 'none';
+
+            // 显示开始训练反馈
+            showFireFeedback("AI教练：训练开始，请提起灭火器。");
+
+            // 开始计时器
+            fireTimer = setInterval(() => {
+                fireSeconds++;
+                updateFireTimer();
+
+                // 模拟训练进度
+                if (fireSeconds <= 30) {
+                    let progress = Math.min((fireSeconds / 30) * 100, 100);
+                    document.getElementById('fireProgressBar').style.width = progress + '%';
+                    document.getElementById('fireProgressPercent').textContent = Math.round(progress) + '%';
+
+                    // 模拟完成步骤
+                    if (fireSeconds >= 5 && fireStep < 1) {
+                        completeFireStep(1, "很好！已成功提起灭火器，请继续拔出保险销。");
+                    }
+                    if (fireSeconds >= 10 && fireStep < 2) {
+                        completeFireStep(2, "保险销已拔出，请握住喷管前端。");
+                    }
+                    if (fireSeconds >= 15 && fireStep < 3) {
+                        completeFireStep(3, "喷管握持正确，请压下压把对准火焰根部。");
+                    }
+                    if (fireSeconds >= 20 && fireStep < 4) {
+                        completeFireStep(4, "完美！所有动作完成标准，消防训练成功。");
+                    }
+                } else {
+                    // 训练完成
+                    clearInterval(fireTimer);
+                    fireTrainingActive = false;
+                    document.getElementById('fireFeedback2').style.display = 'block';
+
+                    // 更新统计数据
+                    updateStatsAfterTraining('fire');
+                }
             }, 1000);
+        }
+
+        function resetFireTraining() {
+            clearInterval(fireTimer);
+            fireTrainingActive = false;
+            fireSeconds = 0;
+            fireStep = 0;
+
+            // 重置界面
+            document.getElementById('fireTimer').textContent = '00:00';
+            document.getElementById('fireProgressBar').style.width = '0%';
+            document.getElementById('fireProgressPercent').textContent = '0%';
+            resetFireSteps();
+
+            document.getElementById('fireTraining').style.display = 'none';
+            document.getElementById('startFireBtn').style.display = 'inline-block';
+            document.getElementById('resetFireBtn').style.display = 'none';
+            document.getElementById('fireFeedback1').style.display = 'block';
+            document.getElementById('fireFeedback2').style.display = 'none';
+
+            showFireFeedback("AI教练：消防训练已重置，可以重新开始训练。");
+        }
+
+        function resetFireSteps() {
+            for (let i = 1; i <= 4; i++) {
+                const stepElement = document.getElementById('fireStep' + i);
+                stepElement.className = 'step-check';
+                stepElement.textContent = i;
+            }
+        }
+
+        function completeFireStep(stepNumber, feedback) {
+            const stepElement = document.getElementById('fireStep' + stepNumber);
+            stepElement.className = 'step-check completed';
+            stepElement.innerHTML = '<i class="fas fa-check"></i>';
+            fireStep = stepNumber;
+
+            // 显示相应反馈
+            showFireFeedback(feedback);
+        }
+
+        function updateFireTimer() {
+            const minutes = Math.floor(fireSeconds / 60);
+            const seconds = fireSeconds % 60;
+            document.getElementById('fireTimer').textContent =
+                (minutes < 10 ? '0' : '') + minutes + ':' +
+                (seconds < 10 ? '0' : '') + seconds;
+        }
+
+        function showFireFeedback(message) {
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback-message correct';
+            feedbackDiv.innerHTML = `
+                <div class="ai-avatar">
+                    <i class="fas fa-robot"></i>
+                    <span><strong>AI教练：</strong></span>
+                </div>
+                <p>${message}</p>
+            `;
+
+            const aiFeedback = document.querySelector('#fire .ai-feedback');
+            if (aiFeedback) {
+                // 移除之前的临时反馈
+                const oldMessages = aiFeedback.querySelectorAll('.feedback-message:not(#fireFeedback1):not(#fireFeedback2)');
+                oldMessages.forEach(msg => msg.remove());
+
+                // 添加新反馈
+                aiFeedback.appendChild(feedbackDiv);
+
+                // 5秒后移除消息
+                setTimeout(() => {
+                    if (feedbackDiv.parentNode) {
+                        feedbackDiv.parentNode.removeChild(feedbackDiv);
+                    }
+                }, 5000);
+            }
+        }
+
+        // 心肺复苏训练功能
+        function startCPRTraining() {
+            if (cprTrainingActive) return;
+
+            cprTrainingActive = true;
+            cprSeconds = 0;
+            cprStep = 0;
+
+            // 重置步骤
+            resetCPRSteps();
+
+            // 更新训练界面显示
+            document.getElementById('cprTraining').style.display = 'block';
+            document.getElementById('startCPRBtn').style.display = 'none';
+            document.getElementById('resetCPRBtn').style.display = 'inline-block';
+            document.getElementById('cprFeedback1').style.display = 'none';
+            document.getElementById('cprFeedback2').style.display = 'none';
+
+            // 显示开始训练反馈
+            showCPRFeedback("AI教练：训练开始，请评估患者意识与呼吸。");
+
+            // 开始计时器
+            cprTimer = setInterval(() => {
+                cprSeconds++;
+                updateCPRTimer();
+
+                // 模拟训练进度
+                if (cprSeconds <= 60) {
+                    let progress = Math.min((cprSeconds / 60) * 100, 100);
+                    document.getElementById('cprProgressBar').style.width = progress + '%';
+                    document.getElementById('cprProgressPercent').textContent = Math.round(progress) + '%';
+
+                    // 模拟完成步骤
+                    if (cprSeconds >= 8 && cprStep < 1) {
+                        completeCPRStep(1, "意识评估完成，请呼叫120并获取AED。");
+                    }
+                    if (cprSeconds >= 15 && cprStep < 2) {
+                        completeCPRStep(2, "120已呼叫，请开始胸外按压。");
+                    }
+                    if (cprSeconds >= 30 && cprStep < 3) {
+                        completeCPRStep(3, "按压动作良好，请进行人工呼吸。");
+                    }
+                    if (cprSeconds >= 45 && cprStep < 4) {
+                        completeCPRStep(4, "优秀！心肺复苏训练完成，所有步骤符合标准。");
+                    }
+                } else {
+                    // 训练完成
+                    clearInterval(cprTimer);
+                    cprTrainingActive = false;
+                    document.getElementById('cprFeedback2').style.display = 'block';
+
+                    // 更新统计数据
+                    updateStatsAfterTraining('cpr');
+                }
+            }, 1000);
+        }
+
+        function resetCPRTraining() {
+            clearInterval(cprTimer);
+            cprTrainingActive = false;
+            cprSeconds = 0;
+            cprStep = 0;
+
+            // 重置界面
+            document.getElementById('cprTimer').textContent = '00:00';
+            document.getElementById('cprProgressBar').style.width = '0%';
+            document.getElementById('cprProgressPercent').textContent = '0%';
+            resetCPRSteps();
+
+            document.getElementById('cprTraining').style.display = 'none';
+            document.getElementById('startCPRBtn').style.display = 'inline-block';
+            document.getElementById('resetCPRBtn').style.display = 'none';
+            document.getElementById('cprFeedback1').style.display = 'block';
+            document.getElementById('cprFeedback2').style.display = 'none';
+
+            showCPRFeedback("AI教练：心肺复苏训练已重置，可以重新开始训练。");
+        }
+
+        function resetCPRSteps() {
+            for (let i = 1; i <= 4; i++) {
+                const stepElement = document.getElementById('cprStep' + i);
+                stepElement.className = 'step-check';
+                stepElement.textContent = i;
+            }
+        }
+
+        function completeCPRStep(stepNumber, feedback) {
+            const stepElement = document.getElementById('cprStep' + stepNumber);
+            stepElement.className = 'step-check completed';
+            stepElement.innerHTML = '<i class="fas fa-check"></i>';
+            cprStep = stepNumber;
+
+            // 显示相应反馈
+            showCPRFeedback(feedback);
+        }
+
+        function updateCPRTimer() {
+            const minutes = Math.floor(cprSeconds / 60);
+            const seconds = cprSeconds % 60;
+            document.getElementById('cprTimer').textContent =
+                (minutes < 10 ? '0' : '') + minutes + ':' +
+                (seconds < 10 ? '0' : '') + seconds;
+        }
+
+        function showCPRFeedback(message) {
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback-message correct';
+            feedbackDiv.innerHTML = `
+                <div class="ai-avatar">
+                    <i class="fas fa-robot"></i>
+                    <span><strong>AI教练：</strong></span>
+                </div>
+                <p>${message}</p>
+            `;
+
+            const aiFeedback = document.querySelector('#cpr .ai-feedback');
+            if (aiFeedback) {
+                // 移除之前的临时反馈
+                const oldMessages = aiFeedback.querySelectorAll('.feedback-message:not(#cprFeedback1):not(#cprFeedback2)');
+                oldMessages.forEach(msg => msg.remove());
+
+                // 添加新反馈
+                aiFeedback.appendChild(feedbackDiv);
+
+                // 5秒后移除消息
+                setTimeout(() => {
+                    if (feedbackDiv.parentNode) {
+                        feedbackDiv.parentNode.removeChild(feedbackDiv);
+                    }
+                }, 5000);
+            }
+        }
+
+        function updateStatsAfterTraining(type) {
+            // 模拟更新统计数据
+            if (type === 'fire') {
+                const currentValue = parseInt(document.getElementById('fireSkillBar').style.width);
+                const newValue = Math.min(currentValue + 5, 100);
+                document.getElementById('fireSkillBar').style.width = newValue + '%';
+                document.querySelector('#fireSkillBar').parentElement.previousElementSibling.querySelector('.skill-percent').textContent = newValue + '%';
+
+                document.getElementById('totalParticipants').textContent = parseInt(document.getElementById('totalParticipants').textContent) + 1;
+            } else if (type === 'cpr') {
+                const currentValue = parseInt(document.getElementById('cprSkillBar').style.width);
+                const newValue = Math.min(currentValue + 3, 100);
+                document.getElementById('cprSkillBar').style.width = newValue + '%';
+                document.querySelector('#cprSkillBar').parentElement.previousElementSibling.querySelector('.skill-percent').textContent = newValue + '%';
+
+                document.getElementById('totalParticipants').textContent = parseInt(document.getElementById('totalParticipants').textContent) + 1;
+            }
+
+            // 重新计算平均分
+            const fireSkill = parseInt(document.getElementById('fireSkillBar').style.width);
+            const callSkill = parseInt(document.getElementById('callSkillBar').style.width);
+            const cprSkill = parseInt(document.getElementById('cprSkillBar').style.width);
+            const processSkill = parseInt(document.getElementById('processSkillBar').style.width);
+            const avgScore = Math.round((fireSkill + callSkill + cprSkill + processSkill) / 4);
+            document.getElementById('avgScore').textContent = avgScore + '%';
+        }
+
+        function showFireTips() {
+            const tipsDiv = document.createElement('div');
+            tipsDiv.className = 'feedback-message correct';
+            tipsDiv.innerHTML = `
+                <div class="ai-avatar">
+                    <i class="fas fa-lightbulb"></i>
+                    <span><strong>消防训练要点：</strong></span>
+                </div>
+                <p><strong>消防栓使用四步法：</strong></p>
+                <ol>
+                    <li><strong>提</strong> - 垂直提起灭火器</li>
+                    <li><strong>拔</strong> - 用力拔掉保险销</li>
+                    <li><strong>握</strong> - 一手握住喷管前端，对准火源</li>
+                    <li><strong>压</strong> - 另一手压下压把，左右扫射</li>
+                </ol>
+                <p><strong>119报警关键信息：</strong></p>
+                <ul>
+                    <li>详细地址（街道、门牌号）</li>
+                    <li>火情大小与类型</li>
+                    <li>报警人姓名与联系电话</li>
+                </ul>
+            `;
+
+            const aiFeedback = document.querySelector('#fire .ai-feedback');
+            if (aiFeedback) {
+                // 移除之前的提示
+                const oldTips = aiFeedback.querySelectorAll('.feedback-message:not(#fireFeedback1):not(#fireFeedback2)');
+                oldTips.forEach(tip => tip.remove());
+
+                // 添加新提示
+                aiFeedback.appendChild(tipsDiv);
+
+                // 10秒后移除提示
+                setTimeout(() => {
+                    if (tipsDiv.parentNode) {
+                        tipsDiv.parentNode.removeChild(tipsDiv);
+                    }
+                }, 10000);
+            }
+        }
+
+        function showCPRTips() {
+            const tipsDiv = document.createElement('div');
+            tipsDiv.className = 'feedback-message correct';
+            tipsDiv.innerHTML = `
+                <div class="ai-avatar">
+                    <i class="fas fa-lightbulb"></i>
+                    <span><strong>心肺复苏操作要点：</strong></span>
+                </div>
+                <p><strong>心肺复苏关键步骤：</strong></p>
+                <ol>
+                    <li><strong>评估环境</strong> - 确保现场安全</li>
+                    <li><strong>检查意识与呼吸</strong> - 拍打双肩，大声呼叫</li>
+                    <li><strong>呼叫120</strong> - 获取AED（如有）</li>
+                    <li><strong>开始胸外按压</strong> - 位置：两乳头连线中点</li>
+                    <li><strong>人工呼吸</strong> - 每次吹气1秒，见胸廓起伏</li>
+                </ol>
+                <p><strong>技术要点：</strong></p>
+                <ul>
+                    <li>手臂姿势：双臂伸直，与地面垂直</li>
+                    <li>按压深度：5-6厘米（成人）</li>
+                    <li>按压频率：100-120次/分钟</li>
+                    <li>按压与呼吸比：30:2</li>
+                    <li>每次按压后让胸廓完全回弹</li>
+                </ul>
+            `;
+
+            const aiFeedback = document.querySelector('#cpr .ai-feedback');
+            if (aiFeedback) {
+                // 移除之前的提示
+                const oldTips = aiFeedback.querySelectorAll('.feedback-message:not(#cprFeedback1):not(#cprFeedback2)');
+                oldTips.forEach(tip => tip.remove());
+
+                // 添加新提示
+                aiFeedback.appendChild(tipsDiv);
+
+                // 10秒后移除提示
+                setTimeout(() => {
+                    if (tipsDiv.parentNode) {
+                        tipsDiv.parentNode.removeChild(tipsDiv);
+                    }
+                }, 10000);
+            }
+        }
+
+        function generateReport() {
+            // 创建报告内容
+            const reportContent = `=== 应急安全技能评估报告 ===
+
+生成时间: ${new Date().toLocaleString()}
+报告周期: 今日
+
+统计数据:
+- 体验总人数: ${document.getElementById('totalParticipants').textContent}人
+- 平均掌握率: ${document.getElementById('avgScore').textContent}
+- 最强技能: 119报警信息完整度 (${document.querySelector('#callSkillBar').parentElement.previousElementSibling.querySelector('.skill-percent').textContent})
+- 最弱技能: 心肺复苏按压合格率 (${document.querySelector('#cprSkillBar').parentElement.previousElementSibling.querySelector('.skill-percent').textContent})
+
+详细技能分析:
+1. 消防栓操作规范: ${document.querySelector('#fireSkillBar').parentElement.previousElementSibling.querySelector('.skill-percent').textContent}
+2. 119报警信息完整度: ${document.querySelector('#callSkillBar').parentElement.previousElementSibling.querySelector('.skill-percent').textContent}
+3. 心肺复苏按压合格率: ${document.querySelector('#cprSkillBar').parentElement.previousElementSibling.querySelector('.skill-percent').textContent}
+4. 施救流程规范性: ${document.querySelector('#processSkillBar').parentElement.previousElementSibling.querySelector('.skill-percent').textContent}
+
+培训建议:
+1. 加强心肺复苏专项训练，特别是按压深度和频率的练习
+2. 强化施救流程规范性训练
+3. 消防训练中注意"拔"保险销的动作规范性
+
+=== 报告结束 ===`;
+
+            // 创建下载链接
+            const blob = new Blob([reportContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = '应急安全技能评估报告_' + new Date().toISOString().split('T')[0] + '.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            // 显示生成成功消息
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'feedback-message correct';
+            messageDiv.innerHTML = `
+                <div class="ai-avatar">
+                    <i class="fas fa-download"></i>
+                    <span><strong>系统提示：</strong></span>
+                </div>
+                <p>数据报告已生成并开始下载，文件名为：应急安全技能评估报告.txt</p>
+            `;
+
+            const dataFeedback = document.querySelector('.data-feedback');
+            if (dataFeedback) {
+                dataFeedback.appendChild(messageDiv);
+
+                // 5秒后移除消息
+                setTimeout(() => {
+                    if (messageDiv.parentNode) {
+                        messageDiv.parentNode.removeChild(messageDiv);
+                    }
+                }, 5000);
+            }
+        }
+
+        // 导航高亮
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // 移除所有active类
+                document.querySelectorAll('.nav-links a').forEach(item => {
+                    item.classList.remove('active');
+                });
+
+                // 添加当前active类
+                this.classList.add('active');
+
+                // 滚动到对应区域
+                const targetId = this.getAttribute('href');
+                if (targetId && targetId !== '#') {
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 100,
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            });
         });
     </script>
 </body>
